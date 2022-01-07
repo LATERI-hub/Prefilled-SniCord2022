@@ -5,6 +5,7 @@ from discord.utils import get;init()
 import gen3sniper
 from datetime import datetime
 import asyncio
+import os
 
 baseColour = Fore.CYAN + Style.BRIGHT
 errorColour = Fore.RED + Style.BRIGHT + "Error : "
@@ -100,7 +101,14 @@ async def on_message(message):
                     contentParts = content.split()
                     if content.startswith(prefix):
                         await msg.delete()
-                        if content == f'{prefix}snipers':
+                        if content == f'{prefix}exit':
+                            respond = getConfig()['respond']
+                            print(offcolour + 'Exiting the sniper... ')
+                            if respond == "on":
+                                await message.channel.send(f'``🟥 Exiting the sniper... ``')
+                            os._exit(1)
+
+                        elif content == f'{prefix}snipers':
                             configdat=getConfig()
                             respond = configdat['respond']
                             
