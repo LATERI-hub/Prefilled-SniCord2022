@@ -1,0 +1,8 @@
+{
+    "prefix": "->",
+    "token": "your_token_here", 
+    "anigameSniper": "on/off", 
+    "izziSniper": "on/off", 
+    "latency": "0", 
+    "respond": "off"
+}
