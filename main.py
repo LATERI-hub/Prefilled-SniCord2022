@@ -321,6 +321,8 @@ async def on_message(message):
                             embedInfo = (embed.to_dict())
                             if 'description' in embedInfo:
                                 description = embedInfo['description']
+                            else:
+                                description = 'nil'
                             
                             if f'has been added to **{client.user.name}\'s** collection!' in description:
                                 now = datetime.now();current_time = now.strftime("%H:%M:%S")
@@ -328,7 +330,7 @@ async def on_message(message):
                                 name = description.split('**')[1]
                                 print(accentColour + f'Anigame : {rarity} : {name} : Claimed by {client.user} : {recentClaimTimeAnigame[message.channel.id]}')
 
-                            if description == '*A wild anime card appears!*':
+                            elif description == '*A wild anime card appears!*':
                                 now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                 print(baseColour + f'Anigame : A wild anime card appears! : {current_time}')
                                 await asyncio.sleep(latency)
@@ -359,6 +361,9 @@ async def on_message(message):
                             embedInfo = (embed.to_dict())
                             if 'description' in embedInfo:
                                 description = embedInfo['description']
+                            else:
+                                description = 'nil'
+                                
                             if description == '_A wild card has appeared._':
                                 now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                 print(baseColour + f'Izzi : A wild card has appeared. : {current_time}')
