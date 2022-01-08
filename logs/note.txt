@@ -1,0 +1,3 @@
+Log files will be stored here 
+if you want to disable this logging 
+change log's value to "off" in config.json 
