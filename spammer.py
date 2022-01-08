@@ -9,7 +9,7 @@ class Spammer:
     def sendMessage(channelID , token , n):
         messagesSent = 0
         while messagesSent < n:
-            time.sleep(3)
+            time.sleep(5)
             msg = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=random.randint(1,10))))
             payload = {"content" : msg}
             r = requests.post(f'https://discord.com/api/v9/channels/{channelID}/messages' , data=payload , headers={"authorization" : token} )
