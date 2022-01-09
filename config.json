@@ -1,8 +1,15 @@
 {
-    "prefix": "->",
-    "token": "your_token_here", 
-    "anigameSniper": "on/off", 
-    "izziSniper": "on/off", 
+    "prefix": "->", 
+    "token": "", 
+    "anigameSniper": "", 
+    "izziSniper": "", 
     "latency": "0", 
-    "respond": "off"
+    "respond": "", 
+    "baseChannelID": "", 
+    "baseChannelAnigamePrefix": ".", 
+    "baseChannelIzziPrefix": "iz ", 
+    "anigameLottery": "", 
+    "anigameHourly": "", 
+    "izziLottery": "", 
+    "izziHourly": ""
 }
