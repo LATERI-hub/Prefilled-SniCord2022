@@ -1,7 +1,6 @@
-from discord.ext import commands
+from discord.ext import commands , tasks
 import json
-from colorama import Fore, Back, Style , init
-from discord.utils import get;init()
+from colorama import Fore, Style , init;init()
 import gen3sniper
 from datetime import datetime
 import asyncio
@@ -49,6 +48,14 @@ try:
     izziSniper = configdat['izziSniper']
     latency = configdat['latency']
     respond = configdat['respond']
+    baseChannelID = configdat['baseChannelID']
+    baseChannelAnigamePrefix = configdat['baseChannelAnigamePrefix']
+    baseChannelIzziPrefix = configdat['baseChannelIzziPrefix']
+    anigameLottery = configdat['anigameLottery']
+    anigameHourly = configdat['anigameHourly']
+    izziLottery = configdat['izziLottery']
+    izziHourly = configdat['izziHourly']
+
 except Exception as e:
     print(errorColour + f'Failed to Fetch config data\n{e}')
 
@@ -64,7 +71,6 @@ except Exception as e:
 @client.event 
 async def on_ready(): 
     print(baseColour+"""
-
    ___        _                    
   / _ | ___  (_)__ ____ ___ _  ___ 
  / __ |/ _ \/ / _ `/ _ `/  ' \/ -_)
@@ -78,24 +84,56 @@ async def on_ready():
 / (_ / -_) _ \/___//_ <            
 \___/\__/_//_/   /____/            
 
-アニゲームスナイパージェネレーション-3
-                                                                                                                 
-- ver.4.0 \n\n\nMade by - Sebastian09-09\n\n""")
+アニゲームスナイパージェネレーション - 三   ||  ver.4.0 \n\nMade by - Sebastian09-09\n""")
     print(infoColour + f'Prefix : "{prefix}" ')
-    print(infoColour + f'User : {client.user}\nUser-ID : {client.user.id}')
-    print(infoColour + f'Anigame Sniper : {anigameSniper}')
-    print(infoColour + f'Izzi Sniper : {izziSniper}')
+    print(baseColour + f'User : {client.user}\nUser-ID : {client.user.id}')
+    print(getColour(anigameSniper)[0] + f'Anigame Sniper : {anigameSniper}')
+    print(getColour(izziSniper)[0] + f'Izzi Sniper : {izziSniper}')
     print(infoColour + f'Client Latency : {round(client.latency * 1000)}ms')
     print(infoColour + f'Latency : {latency}s')
-    print(infoColour + f'Respond : {respond}\n\n')
+    print(infoColour + f'Respond : {respond}')
+    print(getColour(anigameLottery)[0] + f'Anigame Lottery : {anigameLottery}')
+    print(getColour(anigameHourly)[0] + f'Anigame Hourly : {anigameHourly}')
+    print(getColour(izziLottery)[0] + f'Izzi Lottery : {izziLottery}')
+    print(getColour(izziHourly)[0] + f'Izzi Hourly : {izziHourly}\n\n')
 
+    if anigameLottery == "on":
+        anigameLotteryLoop.start()
+    if anigameHourly == "on":
+        anigameHourlyLoop.start()
+    if izziLottery == "on":
+        izziLotteryLoop.start()
+    if izziHourly == "on":
+        izziHourlyLoop.start()
+
+#you can change the time according to the cooldowns
+
+#anigame lottery
+@tasks.loop(minutes=10 , seconds=30)
+async def anigameLotteryLoop():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}lottery')
+
+#anigame hourly
+@tasks.loop(hours=1 , seconds=30)
+async def anigameHourlyLoop():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}hourly')
+
+#izzi lottery
+@tasks.loop(minutes=15 , seconds=30)
+async def izziLotteryLoop():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}lottery')
+
+#izzi hourly
+@tasks.loop(hours=1 , seconds=30)
+async def izziHourlyLoop():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}hourly')
 
 recentClaimTimeAnigame = {}
 recentClaimTimeIzzi = {}
-threads = {}
 
 @client.event
 async def on_message(message):
+    #Commands
     if message.author.id == client.user.id:
         try:
             async for msg in message.channel.history(limit=10):
@@ -104,6 +142,7 @@ async def on_message(message):
                     contentParts = content.split()
                     if content.startswith(prefix):
                         await msg.delete()
+
                         if content == f'{prefix}exit':
                             respond = getConfig()['respond']
                             print(offcolour + 'Exiting the sniper... ')
@@ -113,20 +152,79 @@ async def on_message(message):
                         
                         elif f'{prefix}spam' in content and len(contentParts) == 2 and contentParts[1].isnumeric():
                             respond = getConfig()['respond']
-                            print(successColour + infoColour + f'Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ')
+                            print(successColour + oncolour + f'Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ')
                             if respond == "on":
                                 await message.channel.send(f'``🟩 Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ``')
-                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , token , int(contentParts[1])))
+                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , token , int(contentParts[1]) , message.channel.name))
                             sp.threads[str(message.channel.id)].setDaemon(True)
                             sp.threads[str(message.channel.id)].start()
+
+                        elif content == f'{prefix}stopspam':
+                            respond = getConfig()['respond']
+                            if str(message.channel.id) in sp.threads:
+                                del sp.threads[str(message.channel.id)]
+                                print(successColour + offcolour + f'Stopping spam in channel { message.channel.name + " : " + str(message.channel.id) } ')
+                                if respond == "on":
+                                    await message.channel.send(f'``🟥 Stopping spam in channel { message.channel.name + " : " + str(message.channel.id) } ``')
+                            else:
+                                print(infoColour + f'Channel { message.channel.name + " : " + str(message.channel.id) } is not being spammed ')
+                                if respond == "on":
+                                    await message.channel.send(f'``⚠️ Channel { message.channel.name + " : " + str(message.channel.id) } is not being spammed  ``')
+                        
+                        elif content == f'{prefix}features':
+                            configdat=getConfig()
+                            respond = configdat['respond']
+                            print(getColour(configdat["anigameLottery"])[0] + f'Anigame Lottery : {configdat["anigameLottery"]}')
+                            print(getColour(configdat["anigameHourly"])[0] + f'Anigame Hourly : {configdat["anigameHourly"]}')
+                            print(getColour(configdat["izziLottery"])[0] + f'Izzi Lottery : {configdat["izziLottery"]}')
+                            print(getColour(configdat["izziHourly"])[0] + f'Izzi Hourly : {configdat["izziHourly"]}')
+                            if respond == "on":
+                                a=await message.channel.send(f'``{getColour(configdat["anigameLottery"])[1]} Anigame Lottery : {configdat["anigameLottery"]} ``\n``{getColour(configdat["anigameHourly"])[1]} Anigame Hourly : {configdat["anigameHourly"]} ``\n``{getColour(configdat["izziLottery"])[1]} Izzi Lottery : {configdat["izziLottery"]} ``\n``{getColour(configdat["izziHourly"])[1]} Izzi Hourly : {configdat["izziHourly"]} ``')
+                                await asyncio.sleep(10);await a.delete()
+                        
+                        elif content.startswith(f'{prefix}features') and len(contentParts) == 2 and contentParts[1].lower() in ['on' , 'off']:
+                            configdat=getConfig()
+                            respond = configdat["respond"]
+                            value = contentParts[1].lower()
+                            anigameLottery = value;configdat['anigameLottery'] = anigameLottery
+                            anigameHourly = value;configdat['anigameHourly'] = anigameHourly
+                            izziLottery = value;configdat['izziLottery'] = izziLottery
+                            izziHourly = value;configdat['izziHourly'] = izziHourly
+                            setConfig(configdat)
+
+                            if anigameLotteryLoop.is_running() and anigameLottery == "off":
+                                anigameLotteryLoop.cancel()
+                            elif not anigameLotteryLoop.is_running() and anigameLottery == "on":
+                                anigameLotteryLoop.start()
+
+                            if anigameHourlyLoop.is_running() and anigameLottery == "off":
+                                anigameHourlyLoop.cancel()
+                            elif not anigameHourlyLoop.is_running() and anigameLottery == "on":
+                                anigameHourlyLoop.start()
+
+                            if izziLotteryLoop.is_running() and anigameLottery == "off":
+                                izziLotteryLoop.cancel()
+                            elif not izziLotteryLoop.is_running() and anigameLottery == "on":
+                                izziLotteryLoop.start()
+                                
+                            if izziHourlyLoop.is_running() and anigameLottery == "off":
+                                izziHourlyLoop.cancel()
+                            elif not izziHourlyLoop.is_running() and anigameLottery == "on":
+                                izziHourlyLoop.start()
+
+                            print(getColour(anigameLottery)[0] + f'Anigame Lottery : {anigameLottery}')
+                            print(getColour(anigameHourly)[0] + f'Anigame Hourly : {anigameHourly}')
+                            print(getColour(izziLottery)[0] + f'Izzi Lottery : {izziLottery}')
+                            print(getColour(izziHourly)[0] + f'Izzi Hourly : {izziHourly}')
+                            if respond == "on":
+                                a=await message.channel.send(f'``{getColour(anigameLottery)[1]} Anigame Lottery : {anigameLottery} ``\n``{getColour(anigameHourly)[1]} Anigame Hourly : {anigameHourly} ``\n``{getColour(configdat["izziLottery"])[1]} Izzi Lottery : {configdat["izziLottery"]} ``\n``{getColour(configdat["izziHourly"])[1]} Izzi Hourly : {configdat["izziHourly"]} ``')
+                                await asyncio.sleep(10);await a.delete()
 
                         elif content == f'{prefix}snipers':
                             configdat=getConfig()
                             respond = configdat['respond']
-                            
                             print(getColour(configdat["anigameSniper"])[0] + f'Anigame Sniper : {configdat["anigameSniper"]}')
                             print(getColour(configdat["izziSniper"])[0] + f'Izzi Sniper : {configdat["izziSniper"]}')
-
                             if respond == "on":
                                 a=await message.channel.send(f'``{getColour(configdat["anigameSniper"])[1]} Anigame Sniper : {configdat["anigameSniper"]} ``\n``{getColour(configdat["izziSniper"])[1]} Izzi Sniper : {configdat["izziSniper"]} ``')
                                 await asyncio.sleep(10);await a.delete()
@@ -151,7 +249,60 @@ async def on_message(message):
                             value = contentParts[2].lower()
                             configdat=getConfig()
                             respond = configdat['respond']
-                            if sniper.startswith('a'):
+
+                            if sniper.startswith('anigamel'):
+                                configdat['anigameLottery'] = value
+                                setConfig(configdat)
+                                anigameLottery=value
+                                if anigameLottery == "off":
+                                    if anigameLotteryLoop.is_running():anigameLotteryLoop.cancel()
+                                elif anigameLottery == "on":
+                                    if not anigameLotteryLoop.is_running():anigameLotteryLoop.start()
+                                print( successColour + getColour(anigameLottery)[0] + f'Anigame Lottery : {anigameLottery}')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``{getColour(anigameLottery)[1]} Anigame Lottery : {anigameLottery} ``')
+                                    await asyncio.sleep(10);await a.delete()
+
+                            elif sniper.startswith('anigameh'):
+                                configdat['anigameHourly'] = value
+                                setConfig(configdat)
+                                anigameHourly=value
+                                if anigameHourly == "off":
+                                    if anigameHourlyLoop.is_running():anigameHourlyLoop.cancel()
+                                elif anigameHourly == "on":
+                                    if not anigameHourlyLoop.is_running():anigameHourlyLoop.start()
+                                print( successColour + getColour(anigameHourly)[0] + f'Anigame Hourly : {anigameHourly}')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``{getColour(anigameHourly)[1]} Anigame Hourly : {anigameHourly} ``')
+                                    await asyncio.sleep(10);await a.delete()
+
+                            elif sniper.startswith('izzil'):
+                                configdat['izziLottery'] = value
+                                setConfig(configdat)
+                                izziLottery=value
+                                if izziLottery == "off":
+                                    if izziLotteryLoop.is_running():izziLotteryLoop.cancel()
+                                elif izziLottery == "on":
+                                    if not izziLotteryLoop.is_running():izziLotteryLoop.start()
+                                print( successColour + getColour(izziLottery)[0] + f'Izzi Lottery : {izziLottery}')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``{getColour(izziLottery)[1]} Izzi Lottery : {izziLottery} ``')
+                                    await asyncio.sleep(10);await a.delete()
+
+                            elif sniper.startswith('izzih'):
+                                configdat['izziHourly'] = value
+                                setConfig(configdat)
+                                izziHourly=value
+                                if izziHourly == "off":
+                                    if izziHourlyLoop.is_running():izziHourlyLoop.cancel()
+                                elif izziHourly == "on":
+                                    if not izziHourlyLoop.is_running():izziHourlyLoop.start()
+                                print( successColour + getColour(izziHourly)[0] + f'Izzi Hourly : {izziHourly}')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``{getColour(izziHourly)[1]} Izzi Hourly : {izziHourly} ``')
+                                    await asyncio.sleep(10);await a.delete()
+                            
+                            elif sniper.startswith('a'):
                                 configdat['anigameSniper'] = value
                                 setConfig(configdat)
                                 anigameSniper = value
@@ -159,6 +310,7 @@ async def on_message(message):
                                 if respond == "on":
                                     a=await message.channel.send(f'``{getColour(anigameSniper)[1]} Anigame Sniper : {anigameSniper} ``')
                                     await asyncio.sleep(10);await a.delete()
+
                             elif sniper.startswith('i'):
                                 configdat['izziSniper'] = value
                                 setConfig(configdat)
@@ -182,6 +334,7 @@ async def on_message(message):
                                 if respond == "on":
                                     a=await message.channel.send(f'``⚠️ Could not understand the command ``')
                                     await asyncio.sleep(10);await a.delete()
+
                         
                         elif content == f'{prefix}latency':
                             configdat=getConfig()
@@ -314,14 +467,13 @@ async def on_message(message):
                         else:
                             print(errorColour + f'Could not understand the command : {message.content}')
                             if getConfig()['respond'] == "on":
-                                a=await message.channel.send(f'``🟥 Could not understand the command : {message.content} ``')
+                                a=await message.channel.send(f'``⚠️ Could not understand the command : {message.content} ``')
                                 await asyncio.sleep(10);await a.delete()
                                 
-        
         except Exception as e:
             print(errorColour + f'{e}')
         
-    
+    #Anigame Sniper
     elif message.author.id == 571027211407196161 and f'{str(message.guild.id)}|{str(message.channel.id)}' in getChannels():
         try:
             configdat=getConfig()
@@ -354,8 +506,8 @@ async def on_message(message):
         except Exception as e:
             print(errorColour + f'{e}')            
 
-        
-
+    
+    #Izzi Sniper
     elif message.author.id == 784851074472345633 and f'{str(message.guild.id)}|{str(message.channel.id)}' in getChannels():
         try:
             configdat=getConfig()
