@@ -26,8 +26,7 @@ ___
 [![Foo](https://github.com/Sebastian09-09/Anigame-Sniper-Gen-3/blob/main/images/Anigame%20Sniper%20Gen-3.png)](http://google.com.au/)
 
 ## Disclaimer
-::: warning
+### warning
 *This is against TOS and can get your account banned , use at your own risk!* 
-:::
 > If you like my sniper consider putting a star on this repo !
 
