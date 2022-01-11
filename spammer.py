@@ -39,7 +39,7 @@ class Spammer:
             print(Fore.YELLOW + Style.BRIGHT + f'Spam completed in channel {channelName} : {channelID}')
 
 
-#you can change the time in line 15 and 30
+#you can change the time in line 14 and 29
 #but if you reduce the time more and more
 #your account might start getting ratelimited and
 #discord could temp. ban your account from accesing there API .
