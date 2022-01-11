@@ -25,8 +25,10 @@ if 'config.json' not in files:
     "baseChannelIzziPrefix": "iz ", 
     "anigameLottery": "", 
     "anigameHourly": "", 
+    "anigameBTALL": "",
     "izziLottery": "",
-    "izziHourly": ""
+    "izziHourly": "",
+    "izziBTALL": ""
 }''')
 
 configdat = getConfig()
@@ -36,8 +38,10 @@ for i in configdat:
     or i == 'respond' \
     or i == 'anigameLottery'\
     or i == 'anigameHourly'\
+    or i == 'anigameBTALL'\
     or i == 'izziLottery'\
-    or i == 'izziHourly':
+    or i == 'izziHourly'\
+    or i == 'izziBTALL':
         value = input(f'{i} (on/off) : ')
 
     elif i== 'latency':
