@@ -19,10 +19,10 @@ ___
 - Just copy the codes
 ___
 ## Setting up
-- run ==configmaker.py==
+- run configmaker.py
 - fill in the details
-- run ==installer.py==
-- run ==main.py==
+- run installer.py
+- run main.py
 ___
 ## Commands
 
