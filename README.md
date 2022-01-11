@@ -2,7 +2,7 @@
 ___
 ## Features
 - Inbuilt Spammer
-- Responds too your messages in discord (on/off)
+- Responds to your messages in discord (on/off)
 - Snipes only where you want it to
 - Set latency so that the bot waits for some seconds before claiming the cards
 - claims anigame lottery (on/off)
