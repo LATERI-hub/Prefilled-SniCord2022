@@ -98,8 +98,8 @@ async def on_ready():
     print(getColour(anigameHourly)[0] + f'Anigame Hourly : {anigameHourly}')
     print(getColour(anigameBTALL)[0] + f'Anigame bt all : {anigameBTALL}')
     print(getColour(izziLottery)[0] + f'Izzi Lottery : {izziLottery}')
-    print(getColour(izziHourly)[0] + f'Izzi Hourly : {izziHourly}\n\n')
-    print(getColour(izziBTALL)[0] + f'Izzi bt all : {izziBTALL}')
+    print(getColour(izziHourly)[0] + f'Izzi Hourly : {izziHourly}')
+    print(getColour(izziBTALL)[0] + f'Izzi bt all : {izziBTALL}\n\n')
 
     if anigameLottery == "on":
         anigameLotteryLoop.start()
