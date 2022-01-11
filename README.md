@@ -23,7 +23,7 @@ ___
 | ext    | extension to be used for dest files. |
 
 ## Links
-<img src="https://github.com/Sebastian09-09/Anigame-Sniper-Gen-3/blob/main/images/Anigame%20Sniper%20Gen-3.png" width="200" />
+<a href="https://youtube.com/"><img src="https://github.com/Sebastian09-09/Anigame-Sniper-Gen-3/blob/main/images/Anigame%20Sniper%20Gen-3.png" width="500" /></a>
 
 ## Disclaimer
 ### warning
