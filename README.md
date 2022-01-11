@@ -7,10 +7,10 @@ ___
 - Set latency so that the bot waits for some seconds before claiming the cards
 - claims anigame lottery (on/off)
 - claims anigame hourly (on/off)
-- does anigames battle all (on/off)
+- does anigames battle all (on/off) every hour
 - claims izzi lottery (on/off)
 - claims izzi hourly (on/off)
-- does izzi battle all (on/off)
+- does izzi battle all (on/off) every hour
 ___
 ## Get the sniper
 - Download the codes as zip file or,
