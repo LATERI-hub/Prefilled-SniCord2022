@@ -51,7 +51,7 @@ ___
 > <a href="https://discord.gg/GYpvU3CGMq">Discord Support Server</a>
 ___
 ## Disclaimer
-#### warning
+### warning
 *This is against TOS and can get your account banned , use at your own risk!* 
 > If you like my sniper consider putting a star on this repo !
 
