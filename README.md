@@ -15,12 +15,11 @@ ___
 
 ## Commands
 
-
-| command | Description |
+| Command | Description |
 | ------ | ----------- |
-| data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
+| exit   | closes the sniper |
+| spam (n/!) | spams a channel (n=number/!=for infinity messages) |
+| stopspam | stops spam |
 
 ## Links
 <a href="https://youtube.com/" target="_blank" ><img src="https://github.com/Sebastian09-09/Anigame-Sniper-Gen-3/blob/main/images/Anigame%20Sniper%20Gen-3.png" width="500" /></a>
