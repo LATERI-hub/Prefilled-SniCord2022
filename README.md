@@ -47,7 +47,7 @@ ___
 | clearchannels   | no channel is being sniped now |
 ___
 ## Links
-<a href="https://youtu.be/GJDwxxwwdaU" target="_blank" ><img src="https://github.com/Sebastian09-09/Anigame-Sniper-Gen-3/blob/main/images/Anigame%20Sniper%20Gen-3.png" width="400" /></a>
+<a href="https://youtu.be/GJDwxxwwdaU" target="_blank" ><img src="https://github.com/Sebastian09-09/Anigame-Sniper-Gen-3/blob/main/images/Anigame%20Sniper%20Gen-3.png" width="400" /></a><br>
 <a href="https://discord.gg/GYpvU3CGMq">Discord Support Server</a>
 ___
 ## Disclaimer
