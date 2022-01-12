@@ -52,6 +52,6 @@ ___
 ___
 ## Disclaimer
 ### warning
-*This is against TOS and can get your account banned , use at your own risk!* 
+*This is against Discord's TOS and can get your account banned , use at your own risk!* 
 > If you like my sniper consider putting a star on this repo !
 
