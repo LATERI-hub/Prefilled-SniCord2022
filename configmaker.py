@@ -52,4 +52,4 @@ for i in configdat:
     
     configdat[i] = value
 setConfig(configdat)
-input('completed! , press space to continue ')
+input('completed! , press enter to continue ')
