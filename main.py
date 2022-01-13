@@ -1,10 +1,17 @@
-from discord.ext import commands , tasks
+import os
+try:
+    from discord.ext import commands , tasks
+except:
+    os.system('pip install discord')
+try:
+    from colorama import Fore, Style , init;init()
+except:
+    os.system('pip install colorama')
 import json
 from colorama import Fore, Style , init;init()
 import gen3sniper
 from datetime import datetime
 import asyncio
-import os
 from spammer import Spammer as sp
 import threading 
 
