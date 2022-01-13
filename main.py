@@ -3,10 +3,12 @@ try:
     from discord.ext import commands , tasks
 except:
     os.system('pip install discord')
+    from discord.ext import commands , tasks
 try:
     from colorama import Fore, Style , init;init()
 except:
     os.system('pip install colorama')
+    from colorama import Fore, Style , init;init()
 import json
 from colorama import Fore, Style , init;init()
 import gen3sniper
