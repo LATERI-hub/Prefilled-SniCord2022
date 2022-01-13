@@ -136,7 +136,7 @@ async def anigameHourlyLoop():
     await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}hourly')
 
 #anigame bt all
-@tasks.loop(hours=1)
+@tasks.loop(minutes=30)
 async def anigameBTALLLoop():
     await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}bt all')
 
@@ -151,7 +151,7 @@ async def izziHourlyLoop():
     await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}hourly')
 
 #izzi bt all
-@tasks.loop(hours=1)
+@tasks.loop(minutes=30)
 async def izziBTALLLoop():
     await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}bt all')
 
