@@ -182,7 +182,7 @@ async def on_message(message):
                             print(successColour + oncolour + f'Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ')
                             if respond == "on":
                                 a=await message.channel.send(f'``🟩 Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ``')
-                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , token , contentParts[1] , message.channel.name))
+                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , token , int(contentParts[1]) , message.channel.name))
                             sp.threads[str(message.channel.id)].setDaemon(True)
                             sp.threads[str(message.channel.id)].start()
                             await asyncio.sleep(10);await a.delete()
