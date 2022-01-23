@@ -114,7 +114,7 @@ async def on_ready():
 / (_ / -_) _ \/___//_ <            
 \___/\__/_//_/   /____/            
 
-アニゲームスナイパージェネレーション - 三   ||  ver.4.0 \n\nMade by - Sebastian09-09\n""")
+アニゲームスナイパージェネレーション - 三   ||  ver.4.1 \n\nMade by - Sebastian09-09\n""")
     print(infoColour + f'Prefix : "{prefix}" ')
     print(baseColour + f'User : {client.user}\nUser-ID : {client.user.id}')
     print(getColour(anigameSniper)[0] + f'Anigame Sniper : {anigameSniper}')
