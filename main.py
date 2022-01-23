@@ -16,6 +16,7 @@ from datetime import datetime
 import asyncio
 from spammer import Spammer as sp
 import threading 
+import server
 
 baseColour = Fore.CYAN + Style.BRIGHT
 errorColour = Fore.RED + Style.BRIGHT + "Error : "
@@ -49,10 +50,23 @@ def setConfig(data):
     with open('config.json' , 'w' , encoding='utf-8') as c:
         json.dump(data , c)
 
+def getNotif():
+    with open('notificationSettings.json' , 'r' , encoding='utf-8') as c:
+        return json.load(c)
+
+def clearText(text):
+    newText = ''
+    for i in text:
+        if i != ' ':
+            newText += i
+    return newText
+
 try:
     configdat = getConfig()
     prefix = configdat['prefix']
+    controllerAccountID = configdat['controllerAccountID']
     token = configdat['token']
+    spamTokens = configdat['spamTokens']
     anigameSniper = configdat['anigameSniper']
     izziSniper = configdat['izziSniper']
     latency = configdat['latency']
@@ -66,6 +80,11 @@ try:
     izziLottery = configdat['izziLottery']
     izziHourly = configdat['izziHourly']
     izziBTALL = configdat['izziBTALL']
+    notificationChannelID = configdat['notificationChannelID']
+
+    notify = getNotif()
+    anigameNotif = notify['anigame'];anigameNotif = list(map(lambda x:clearText(x.lower()) , anigameNotif))
+    izziNotif = notify['izzi'];izziNotif = list(map(lambda x:clearText(x.lower()) , izziNotif))
 
 except Exception as e:
     print(errorColour + f'Failed to Fetch config data\n{e}')
@@ -158,6 +177,11 @@ async def izziBTALLLoop():
 recentClaimTimeAnigame = {}
 recentClaimTimeIzzi = {}
 
+async def notificate(bot , name , rarity,channelName,token):
+    await client.get_channel(int(notificationChannelID)).send(f'`{bot}` : Claimed **{rarity}** __{name}__ in channel {channelName}')
+    gen3sniper.makeUnread(notificationChannelID,token)
+
+
 @client.event
 async def on_message(message):
     #Commands
@@ -182,7 +206,8 @@ async def on_message(message):
                             print(successColour + oncolour + f'Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ')
                             if respond == "on":
                                 a=await message.channel.send(f'``🟩 Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ``')
-                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , token , int(contentParts[1]) , message.channel.name))
+                            spamTokens.append(token)
+                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , spamTokens , int(contentParts[1]) , message.channel.name))
                             sp.threads[str(message.channel.id)].setDaemon(True)
                             sp.threads[str(message.channel.id)].start()
                             await asyncio.sleep(10);await a.delete()
@@ -192,10 +217,12 @@ async def on_message(message):
                             print(successColour + oncolour + f'Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ')
                             if respond == "on":
                                 a=await message.channel.send(f'``🟩 Starting to spam in channel { message.channel.name + " : " + str(message.channel.id) } ``')
-                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , token , contentParts[1] , message.channel.name))
+                            spamTokens.append(token)
+                            sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , spamTokens , contentParts[1] , message.channel.name))
                             sp.threads[str(message.channel.id)].setDaemon(True)
                             sp.threads[str(message.channel.id)].start()
-                            await asyncio.sleep(10);await a.delete()
+                            if respond == "on":
+                                await asyncio.sleep(10);await a.delete()
 
                         elif content == f'{prefix}stopspam':
                             respond = getConfig()['respond']
@@ -594,6 +621,18 @@ async def on_message(message):
                                 
         except Exception as e:
             print(errorColour + f'{e}')
+
+    #Controller
+    elif message.author.id == int(controllerAccountID):
+        try:
+            async for msg in message.channel.history(limit=10):
+                if message.id == msg.id:
+                    msgContent = msg.content 
+                    if msgContent.startswith(f'{prefix}say'):
+                        await msg.channel.send(f'{msgContent.split(f"{prefix}say")[-1].strip()}')
+
+        except Exception as e:
+            print(errorColour + f'{e}')
         
     #Anigame Sniper
     elif message.author.id == 571027211407196161:
@@ -617,6 +656,8 @@ async def on_message(message):
                                     rarity = description.split('__')[1]
                                     name = description.split('**')[1]
                                     print(accentColour + f'Anigame : {msg.guild.name} : {msg.channel.name} : {rarity} : {name} : Claimed by {client.user} : {recentClaimTimeAnigame[message.channel.id]}')
+                                    if clearText(rarity.lower()) in anigameNotif:
+                                        await notificate('Anigame' , name , rarity , msg.channel.name,token)
 
                                 elif description == '*A wild anime card appears!*':
                                     now = datetime.now();current_time = now.strftime("%H:%M:%S")
@@ -626,6 +667,8 @@ async def on_message(message):
                                     if resp == 204:
                                         now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                         recentClaimTimeAnigame[message.channel.id] = current_time
+                                    else:
+                                        print(errorColour+f'couldnt claim the card : respond - {resp}')
 
             #bt all
             if message.channel.id == int(getConfig()['baseChannelID']):
@@ -657,6 +700,10 @@ async def on_message(message):
                             rarity = msg.content.split('__')[1]
                             name = msg.content.split('**')[1]
                             print(accentColour + f'Izzi : {msg.guild.name} : {msg.channel.name} : {rarity} : {name} : Claimed by {client.user} : {recentClaimTimeIzzi[message.channel.id]}')
+                            if clearText(rarity.lower())  in izziNotif:
+                                await notificate('Izzi' , name , rarity , msg.channel.name,token)
+
+
 
                         for embed in msg.embeds:
                             embedInfo = (embed.to_dict())
@@ -673,11 +720,14 @@ async def on_message(message):
                                 if resp == 204:
                                     now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                     recentClaimTimeIzzi[message.channel.id] = current_time
+                                else:
+                                    print(errorColour+f'couldnt claim the card : respond - {resp}')
 
         except Exception as e:
             print(errorColour + f'{e}')
 
 try:
+    server.keep_alive()
     client.run(token, bot=False)
 except Exception as e:
     print(errorColour + f'{e}')

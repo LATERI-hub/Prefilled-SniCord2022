@@ -49,3 +49,14 @@ def add_reaction(channelID , messageID , emoji , token):
         f'https://discord.com/api/v9/channels/{channelID}/messages/{messageID}/reactions/{emoji}/%40me' , headers=headers
     )
     return(r.status_code)
+
+def makeUnread(channelID,token):
+    headers = {
+        'authorization' : token
+    }
+    r = requests.get(f'https://discord.com/api/v9/channels/{channelID}/messages?limit=2' , headers=headers)
+    jsondat = json.loads(r.text)
+    messageID = jsondat[-1].get('id')
+    url = f'https://discord.com/api/v9/channels/{channelID}/messages/{messageID}/ack'
+    r = requests.post(url , headers={"authorization":token} , json={"manual":True , "mention_count":0})
+    return(r.status_code)

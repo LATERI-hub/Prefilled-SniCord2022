@@ -15,12 +15,14 @@ if 'config.json' not in files:
     with open('config.json' , 'w' , encoding='utf-8') as f:
         f.write('''{
     "prefix": "->", 
+    "controllerAccountID": "",
     "token": "", 
+    "spamTokens" : [],
     "anigameSniper": "", 
     "izziSniper": "", 
     "latency": "0", 
     "respond": "", 
-    "baseChannelID": "", 
+    "baseChannelID": "",
     "baseChannelAnigamePrefix": ".", 
     "baseChannelIzziPrefix": "iz ", 
     "anigameLottery": "", 
@@ -28,11 +30,12 @@ if 'config.json' not in files:
     "anigameBTALL": "",
     "izziLottery": "",
     "izziHourly": "",
-    "izziBTALL": ""
+    "izziBTALL": "",
+    "notificationChannelID": ""
 }''')
 
 configdat = getConfig()
-for i in configdat:
+for i in list(configdat.keys()):
     if i == 'anigameSniper' \
     or i == 'izziSniper' \
     or i == 'respond' \
@@ -46,7 +49,13 @@ for i in configdat:
 
     elif i== 'latency':
         value = input(f'{i} (number) : ')
-    
+
+    elif i== 'spamTokens':
+        much=int(input('how many spamTokens do you want to enter : '))
+        value = []
+        for j in range(much):
+            stoken = input(f'spamToken {j+1} : ')
+            value.append(stoken.strip())    
     else:
         value=input(f'{i} : ')
     

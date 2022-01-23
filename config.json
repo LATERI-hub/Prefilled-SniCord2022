@@ -1,11 +1,13 @@
 {
     "prefix": "->", 
+    "controllerAccountID": "",
     "token": "", 
+    "spamTokens" : [],
     "anigameSniper": "", 
     "izziSniper": "", 
     "latency": "0", 
     "respond": "", 
-    "baseChannelID": "", 
+    "baseChannelID": "",
     "baseChannelAnigamePrefix": ".", 
     "baseChannelIzziPrefix": "iz ", 
     "anigameLottery": "", 
@@ -13,5 +15,6 @@
     "anigameBTALL": "",
     "izziLottery": "",
     "izziHourly": "",
-    "izziBTALL": ""
+    "izziBTALL": "",
+    "notificationChannelID": ""
 }
