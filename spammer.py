@@ -24,7 +24,7 @@ class Spammer:
             
         else:
             messagesSent = 0
-            while messagesSent < n:
+            while messagesSent < int(n):
                 time.sleep(5)
                 if not str(channelID) in Spammer.threads:
                     break
