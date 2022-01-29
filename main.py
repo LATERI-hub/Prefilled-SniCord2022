@@ -15,6 +15,7 @@ import gen3sniper
 from datetime import datetime
 import asyncio
 from spammer import Spammer as sp
+import spammer
 import threading 
 import server
 
@@ -60,6 +61,20 @@ def clearText(text):
         if i != ' ':
             newText += i
     return newText
+
+def checkSpamFile():
+    files=os.listdir()
+    if 'spam.json' not in files:
+        with open('spam.json' , 'w' , encoding='utf-8') as f:
+            f.write('{}')
+
+def spam(spamTokens , token):
+    spamChannels=spammer.getSpam()
+    for channel in spamChannels:
+        spamTokens.append(token)
+        sp.threads[str(channel)] = threading.Thread(target=sp.sendMessage , args=(channel , spamTokens , spamChannels[channel] ,  f'channel id : {channel}' ))
+        sp.threads[str(channel)].setDaemon(True)
+        sp.threads[str(channel)].start()
 
 try:
     configdat = getConfig()
@@ -114,7 +129,7 @@ async def on_ready():
 / (_ / -_) _ \/___//_ <            
 \___/\__/_//_/   /____/            
 
-アニゲームスナイパージェネレーション - 三   ||  ver.4.1 \n\nMade by - Sebastian09-09\n""")
+アニゲームスナイパージェネレーション - 三   ||  version 4.2 \n\nMade by - Sebastian09-09\n""")
     print(infoColour + f'Prefix : "{prefix}" ')
     print(baseColour + f'User : {client.user}\nUser-ID : {client.user.id}')
     print(getColour(anigameSniper)[0] + f'Anigame Sniper : {anigameSniper}')
@@ -141,6 +156,9 @@ async def on_ready():
         izziHourlyLoop.start()
     if izziBTALL == "on":
         izziBTALLLoop.start()
+
+    checkSpamFile()
+    spam(spamTokens , token)
 
 #you can change the time according to the cooldowns
 
@@ -199,6 +217,9 @@ async def on_message(message):
                             print(offcolour + 'Exiting the sniper... ')
                             if respond == "on":
                                 await message.channel.send(f'``🟥 Exiting the sniper... ``')
+                                spamChannels = spammer.getSpam()
+                                spamChannels.clear()
+                                spammer.setSpam(spamChannels)
                             os._exit(1)
                         
                         elif f'{prefix}spam' in content and len(contentParts) == 2 and contentParts[1].isnumeric():
@@ -210,7 +231,11 @@ async def on_message(message):
                             sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , spamTokens , int(contentParts[1]) , message.channel.name))
                             sp.threads[str(message.channel.id)].setDaemon(True)
                             sp.threads[str(message.channel.id)].start()
-                            await asyncio.sleep(10);await a.delete()
+                            spamChannels = spammer.getSpam()
+                            spamChannels[(str(message.channel.id))] = int(contentParts[1])
+                            spammer.setSpam(spamChannels)
+                            if respond == "on":
+                                await asyncio.sleep(10);await a.delete()
 
                         elif f'{prefix}spam' in content and len(contentParts) == 2 and contentParts[1] == '!':
                             respond = getConfig()['respond']
@@ -221,6 +246,9 @@ async def on_message(message):
                             sp.threads[str(message.channel.id)] = threading.Thread(target=sp.sendMessage , args=(message.channel.id , spamTokens , contentParts[1] , message.channel.name))
                             sp.threads[str(message.channel.id)].setDaemon(True)
                             sp.threads[str(message.channel.id)].start()
+                            spamChannels = spammer.getSpam()
+                            spamChannels[(str(message.channel.id))] = '!'
+                            spammer.setSpam(spamChannels)
                             if respond == "on":
                                 await asyncio.sleep(10);await a.delete()
 
@@ -228,6 +256,9 @@ async def on_message(message):
                             respond = getConfig()['respond']
                             if str(message.channel.id) in sp.threads:
                                 del sp.threads[str(message.channel.id)]
+                                spamChannels = spammer.getSpam()
+                                del spamChannels[(str(message.channel.id))]
+                                spammer.setSpam(spamChannels)
                                 print(successColour + offcolour + f'Stopping spam in channel { message.channel.name + " : " + str(message.channel.id) } ')
                                 if respond == "on":
                                     a=await message.channel.send(f'``🟥 Stopping spam in channel { message.channel.name + " : " + str(message.channel.id) } ``')
