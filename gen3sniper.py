@@ -29,6 +29,7 @@ def clickButton(guildID , channelID , messageID , token , click):
         if i.strip() == click:
             data = {
                 "type": 3,
+                "session_id": ' ',
                 "guild_id": guildID,
                 "channel_id": channelID,
                 "message_id": messageID,
