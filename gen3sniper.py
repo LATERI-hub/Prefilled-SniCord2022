@@ -18,9 +18,10 @@ def getcustomID(channelID , messageID , token):
                         buttons[ component['label'] ] = component['custom_id'].strip()
                     if 'emoji' in component:
                         buttons[ component['emoji']['name'] ] = component['custom_id'].strip()
+
     return buttons
     
-def clickButton(guildID , channelID , messageID , token , click):
+def clickButton(guildID , channelID , messageID , token , click , bot):
     headers = {
         'authorization' : token
     }
@@ -28,17 +29,21 @@ def clickButton(guildID , channelID , messageID , token , click):
     for i in buttons:
         if i.strip() == click:
             data = {
-                "type": 3,
-                "session_id": ' ',
-                "guild_id": guildID,
-                "channel_id": channelID,
-                "message_id": messageID,
-                "application_id": "571027211407196161",
-                "data": {
-                    "component_type": 2,
-                    "custom_id": buttons[i] 
+                    "type": 3,
+                    "session_id": ' ',
+                    "guild_id": guildID,
+                    "channel_id": channelID,
+                    "message_id": messageID,
+                    "message_flags": 0,
+                    "data": {
+                        "component_type": 2,
+                        "custom_id": buttons[i] 
+                        }
                     }
-                }
+            if bot == 'anigame':
+                data["application_id"] = "571027211407196161"
+            if bot == 'izzi':
+                data["application_id"]= "784851074472345633"
             r = requests.post(buttonurl, json = data, headers = headers)
             return(r.status_code)
 
