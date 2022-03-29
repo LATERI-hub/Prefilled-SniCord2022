@@ -4,7 +4,7 @@ ___
 - Inbuilt Spammer
 - Responds to your messages in discord (on/off)
 - Snipes only where you want it to
-- Set latency so that the bot waits for some seconds before claiming the cards
+- Set latency so that the bot waits for some seconds before claiming the cards , could be a number or a range (->setlatency 5 "OR" ->setlatency 5-10)
 - claims anigame lottery (on/off)
 - claims anigame hourly (on/off)
 - does anigames battle all (on/off) every hour
