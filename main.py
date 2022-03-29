@@ -18,6 +18,7 @@ from spammer import Spammer as sp
 import spammer
 import threading 
 import server
+import random
 
 baseColour = Fore.CYAN + Style.BRIGHT
 errorColour = Fore.RED + Style.BRIGHT + "Error : "
@@ -129,7 +130,7 @@ async def on_ready():
 / (_ / -_) _ \/___//_ <            
 \___/\__/_//_/   /____/            
 
-アニゲームスナイパージェネレーション - 三   ||  version 4.2 \n\nMade by - Sebastian09-09\n""")
+アニゲームスナイパージェネレーション - 三   ||  version 4.3 \n\nMade by - Sebastian09-09\n""")
     print(infoColour + f'Prefix : "{prefix}" ')
     print(baseColour + f'User : {client.user}\nUser-ID : {client.user.id}')
     print(getColour(anigameSniper)[0] + f'Anigame Sniper : {anigameSniper}')
@@ -487,16 +488,29 @@ async def on_message(message):
                                 a=await message.channel.send(f'``🟨 Client Latency : {lat}ms ``\n``🟨 Latency : {configdat["latency"]}s ``')
                                 await asyncio.sleep(10);await a.delete()
                                 
-                        elif content.startswith(f'{prefix}setlatency') and len(contentParts) == 2 and contentParts[1].isnumeric():
-                            configdat=getConfig()
-                            latency = contentParts[1]
-                            configdat['latency'] = latency
-                            respond = configdat['respond']
-                            setConfig(configdat)
-                            print(successColour + infoColour + f'Latency : {latency}s')
-                            if respond == "on":
-                                a=await message.channel.send(f'``🟨 Latency : {latency}s ``')
-                                await asyncio.sleep(10);await a.delete()
+                        elif content.startswith(f'{prefix}setlatency') and len(contentParts) == 2:
+                            if contentParts[1].isnumeric():
+                                configdat=getConfig()
+                                latency = contentParts[1]
+                                configdat['latency'] = str(latency)
+                                respond = configdat['respond']
+                                setConfig(configdat)
+                                print(successColour + infoColour + f'Latency : {latency}s')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``🟨 Latency : {latency}s ``')
+                                    await asyncio.sleep(10);await a.delete()
+
+                            elif contentParts[1].split('-')[0].isnumeric() and contentParts[1].split('-')[1].isnumeric():
+                                configdat=getConfig()
+                                latency = contentParts[1]
+                                configdat['latency'] = str(latency)
+                                respond = configdat['respond']
+                                setConfig(configdat)
+                                print(successColour + infoColour + f'Latency : {latency}s')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``🟨 Latency : {latency}s ``')
+                                    await asyncio.sleep(10);await a.delete()
+
 
                         elif f'{prefix}addchannel -a' in content and len(contentParts) == 3:
                             guildID = int(contentParts[2].split(':')[0])
@@ -671,7 +685,11 @@ async def on_message(message):
             #Claimer
             if f'{str(message.guild.id)}|{str(message.channel.id)}' in getChannels():
                 configdat=getConfig()
-                latency=int(configdat['latency'])
+                latency=configdat['latency']
+                if '-' not in latency:
+                    latency = int(latency)
+                else:
+                    latency = int(random.randint(int(latency.split('-')[0]),int(latency.split('-')[1])))
                 if configdat['anigameSniper'] == 'on':
                     async for msg in message.channel.history(limit=10):
                         if message.id == msg.id:
@@ -694,7 +712,7 @@ async def on_message(message):
                                     now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                     print(baseColour + f'Anigame : {msg.guild.name} : {msg.channel.name} : A wild anime card appears! : {current_time}')
                                     await asyncio.sleep(latency)
-                                    resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , 'Claim!')
+                                    resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , 'Claim!','anigame')
                                     if resp == 204:
                                         now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                         recentClaimTimeAnigame[message.channel.id] = current_time
@@ -712,7 +730,7 @@ async def on_message(message):
                             else:
                                 title = 'nil'
                             if 'Challenging Area' in title:
-                                resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , '✅')
+                                resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , '✅' , 'anigame')
 
         except Exception as e:
             print(errorColour + f'{e}')            
@@ -722,7 +740,11 @@ async def on_message(message):
     elif message.author.id == 784851074472345633 and f'{str(message.guild.id)}|{str(message.channel.id)}' in getChannels():
         try:
             configdat=getConfig()
-            latency=int(configdat['latency'])
+            latency=configdat['latency']
+            if '-' not in latency:
+                latency = int(latency)
+            else:
+                latency = int(random.randint(int(latency.split('-')[0]),int(latency.split('-')[1])))
             if configdat['izziSniper'] == 'on':
                 async for msg in message.channel.history(limit=10):
                     if message.id == msg.id:
@@ -747,15 +769,16 @@ async def on_message(message):
                                 now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                 print(baseColour + f'Izzi : {msg.guild.name} : {msg.channel.name} : A wild card has appeared. : {current_time}')
                                 await asyncio.sleep(latency)
-                                resp=gen3sniper.add_reaction(msg.channel.id , msg.id , '✅' , token)
+                                resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , 'Claim','izzi')
                                 if resp == 204:
                                     now = datetime.now();current_time = now.strftime("%H:%M:%S")
                                     recentClaimTimeIzzi[message.channel.id] = current_time
                                 else:
                                     print(errorColour+f'couldnt claim the card : respond - {resp}')
+            #new Izzi Sniper
 
         except Exception as e:
-            print(errorColour + f'{e}')
+            print(errorColour + f'{e}') 
 
 try:
     server.keep_alive()
