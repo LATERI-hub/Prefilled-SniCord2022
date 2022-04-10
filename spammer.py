@@ -18,7 +18,7 @@ class Spammer:
     def sendMessage(channelID , tokens , n , channelName):
         if n == '!':
             while True:
-                time.sleep(5)
+                time.sleep(4)
                 if not str(channelID) in Spammer.threads:
                     break
                 for token in tokens:
@@ -37,7 +37,7 @@ class Spammer:
         else:
             messagesSent = 0
             while messagesSent < int(n):
-                time.sleep(5)
+                time.sleep(4)
                 if not str(channelID) in Spammer.threads:
                     break
                 for token in tokens:
