@@ -97,6 +97,12 @@ try:
     izziHourly = configdat['izziHourly']
     izziBTALL = configdat['izziBTALL']
     notificationChannelID = configdat['notificationChannelID']
+    anigameFloor = {}
+    izziFloor = {}
+    anigameFloor['currentFloor'] = configdat['anigameFloorNumber']
+    anigameAutoFloor_ = configdat['anigameAutoFloor']
+    izziFloor['currentFloor'] = configdat['izziFloorNumber']
+    izziAutoFloor_ = configdat['izziAutoFloor']
 
     notify = getNotif()
     anigameNotif = notify['anigame'];anigameNotif = list(map(lambda x:clearText(x.lower()) , anigameNotif))
@@ -130,7 +136,7 @@ async def on_ready():
 / (_ / -_) _ \/___//_ <            
 \___/\__/_//_/   /____/            
 
-アニゲームスナイパージェネレーション - 三   ||  version 4.3 \n\nMade by - Sebastian09-09\n""")
+アニゲームスナイパージェネレーション - 三   ||  version 4.4 \n\nMade by - Sebastian09-09\n""")
     print(infoColour + f'Prefix : "{prefix}" ')
     print(baseColour + f'User : {client.user}\nUser-ID : {client.user.id}')
     print(getColour(anigameSniper)[0] + f'Anigame Sniper : {anigameSniper}')
@@ -141,27 +147,50 @@ async def on_ready():
     print(getColour(anigameLottery)[0] + f'Anigame Lottery : {anigameLottery}')
     print(getColour(anigameHourly)[0] + f'Anigame Hourly : {anigameHourly}')
     print(getColour(anigameBTALL)[0] + f'Anigame bt all : {anigameBTALL}')
+    print(getColour(anigameAutoFloor_)[0] + f'Anigame Auto Floor : {anigameAutoFloor_}')
     print(getColour(izziLottery)[0] + f'Izzi Lottery : {izziLottery}')
     print(getColour(izziHourly)[0] + f'Izzi Hourly : {izziHourly}')
-    print(getColour(izziBTALL)[0] + f'Izzi bt all : {izziBTALL}\n\n')
+    print(getColour(izziBTALL)[0] + f'Izzi bt all : {izziBTALL}')
+    print(getColour(izziAutoFloor_)[0] + f'Izzi Auto Floor : {izziAutoFloor_}\n\n')
 
     if anigameLottery == "on":
         anigameLotteryLoop.start()
     if anigameHourly == "on":
         anigameHourlyLoop.start()
+    if anigameAutoFloor_ == "on":
+        anigameAutoFloor.start()
     if anigameBTALL == "on":
-        anigameBTALLLoop.start()
+        anigameBTALLLoop.start() 
     if izziLottery == "on":
         izziLotteryLoop.start()
+        await asyncio.sleep(2)
     if izziHourly == "on":
         izziHourlyLoop.start()
+        await asyncio.sleep(2)
+    if izziAutoFloor_ == "on":
+        izziAutoFloor.start()
+        await asyncio.sleep(2)
     if izziBTALL == "on":
         izziBTALLLoop.start()
+        await asyncio.sleep(2)
+    
 
     checkSpamFile()
     spam(spamTokens , token)
 
 #you can change the time according to the cooldowns
+
+
+#anigame auto floor/location
+@tasks.loop(minutes=30)
+async def anigameAutoFloor():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}fl {anigameFloor["currentFloor"]}')
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}bt')
+    await asyncio.sleep(450) 
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}bt all')
+    await asyncio.sleep(450)
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}fl {anigameFloor["currentFloor"]+1}')
+
 
 #anigame lottery
 @tasks.loop(minutes=10 , seconds=30)
@@ -178,6 +207,18 @@ async def anigameHourlyLoop():
 async def anigameBTALLLoop():
     await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}bt all')
 
+#izzi auto floor/location
+@tasks.loop(minutes=30)
+async def izziAutoFloor():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}fl {izziFloor["currentFloor"]}')
+    await asyncio.sleep(5) 
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}bt')
+    await asyncio.sleep(450) 
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}bt all')
+    await asyncio.sleep(450)
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}fl {izziFloor["currentFloor"]+1}')
+
+
 #izzi lottery
 @tasks.loop(minutes=15 , seconds=30)
 async def izziLotteryLoop():
@@ -191,7 +232,7 @@ async def izziHourlyLoop():
 #izzi bt all
 @tasks.loop(minutes=30)
 async def izziBTALLLoop():
-    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}bt all')
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}bt all')
 
 recentClaimTimeAnigame = {}
 recentClaimTimeIzzi = {}
@@ -200,6 +241,15 @@ async def notificate(bot , name , rarity,channelName,token):
     await client.get_channel(int(notificationChannelID)).send(f'`{bot}` : Claimed **{rarity}** __{name}__ in channel {channelName}')
     gen3sniper.makeUnread(notificationChannelID,token)
 
+async def notificateDefeat(bot ,token):
+    await client.get_channel(int(notificationChannelID)).send(f'`{bot}` : Defeated in a battle stopping Auto Floor Loop')
+    gen3sniper.makeUnread(notificationChannelID,token)
+
+async def changeArea():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelAnigamePrefix}area {getConfig()["anigameAreaNumber"]}')
+
+async def changeLoc():
+    await client.get_channel(int(baseChannelID)).send(f'{baseChannelIzziPrefix}loc {getConfig()["izziLocNumber"]}')
 
 @client.event
 async def on_message(message):
@@ -276,11 +326,13 @@ async def on_message(message):
                             print(getColour(configdat["anigameLottery"])[0] + f'Anigame Lottery : {configdat["anigameLottery"]}')
                             print(getColour(configdat["anigameHourly"])[0] + f'Anigame Hourly : {configdat["anigameHourly"]}')
                             print(getColour(configdat["anigameBTALL"])[0] + f'Anigame bt all : {configdat["anigameBTALL"]}')
+                            print(getColour(configdat["anigameAutoFloor"])[0] + f'Anigame Auto Floor : {configdat["anigameAutoFloor"]}')
                             print(getColour(configdat["izziLottery"])[0] + f'Izzi Lottery : {configdat["izziLottery"]}')
                             print(getColour(configdat["izziHourly"])[0] + f'Izzi Hourly : {configdat["izziHourly"]}')
                             print(getColour(configdat["izziBTALL"])[0] + f'Izzi bt all : {configdat["izziBTALL"]}')
+                            print(getColour(configdat["izziAutoFloor"])[0] + f'izzi Izzi Floor : {configdat["izziAutoFloor"]}')
                             if respond == "on":
-                                a=await message.channel.send(f'``{getColour(configdat["anigameLottery"])[1]} Anigame Lottery : {configdat["anigameLottery"]} ``\n``{getColour(configdat["anigameHourly"])[1]} Anigame Hourly : {configdat["anigameHourly"]} ``\n``{getColour(configdat["anigameBTALL"])[1]} Anigame bt all : {configdat["anigameBTALL"]} ``\n``{getColour(configdat["izziLottery"])[1]} Izzi Lottery : {configdat["izziLottery"]} ``\n``{getColour(configdat["izziHourly"])[1]} Izzi Hourly : {configdat["izziHourly"]} ``\n``{getColour(configdat["izziBTALL"])[1]} Izzi bt all : {configdat["izziBTALL"]} ``')
+                                a=await message.channel.send(f'``{getColour(configdat["anigameLottery"])[1]} Anigame Lottery : {configdat["anigameLottery"]} ``\n``{getColour(configdat["anigameHourly"])[1]} Anigame Hourly : {configdat["anigameHourly"]} ``\n``{getColour(configdat["anigameBTALL"])[1]} Anigame bt all : {configdat["anigameBTALL"]} ``\n``{getColour(configdat["anigameAutoFloor"])[1]} Anigame Auto Floor : {configdat["anigameAutoFloor"]} ``\n``{getColour(configdat["izziLottery"])[1]} Izzi Lottery : {configdat["izziLottery"]} ``\n``{getColour(configdat["izziHourly"])[1]} Izzi Hourly : {configdat["izziHourly"]} ``\n``{getColour(configdat["izziBTALL"])[1]} Izzi bt all : {configdat["izziBTALL"]} ``\n``{getColour(configdat["izziAutoFloor"])[1]} Izzi Auto Floor : {configdat["izziAutoFloor"]} ``')
                                 await asyncio.sleep(10);await a.delete()
                         
                         elif content.startswith(f'{prefix}features') and len(contentParts) == 2 and contentParts[1].lower() in ['on' , 'off']:
@@ -290,9 +342,11 @@ async def on_message(message):
                             anigameLottery = value;configdat['anigameLottery'] = anigameLottery
                             anigameHourly = value;configdat['anigameHourly'] = anigameHourly
                             anigameBTALL = value;configdat['anigameBTALL'] = anigameBTALL
+                            anigameAutoFloor_ = value;configdat['anigameAutoFloor'] = anigameAutoFloor_
                             izziLottery = value;configdat['izziLottery'] = izziLottery
                             izziHourly = value;configdat['izziHourly'] = izziHourly
                             izziBTALL = value;configdat['izziBTALL'] = izziBTALL
+                            izziAutoFloor_ = value;configdat['izziAutoFloor'] = izziAutoFloor_
                             setConfig(configdat)
 
                             if anigameLotteryLoop.is_running() and anigameLottery == "off":
@@ -310,6 +364,11 @@ async def on_message(message):
                             elif not anigameBTALLLoop.is_running() and anigameBTALL == "on":
                                 anigameBTALLLoop.start()
 
+                            if anigameAutoFloor.is_running() and anigameAutoFloor_ == "off":
+                                anigameAutoFloor.cancel()
+                            elif not anigameAutoFloor.is_running() and anigameAutoFloor_ == "on":
+                                anigameAutoFloor.start()
+
                             if izziLotteryLoop.is_running() and izziLottery == "off":
                                 izziLotteryLoop.cancel()
                             elif not izziLotteryLoop.is_running() and izziLottery == "on":
@@ -325,14 +384,21 @@ async def on_message(message):
                             elif not izziBTALLLoop.is_running() and izziBTALL == "on":
                                 izziBTALLLoop.start()
 
+                            if izziAutoFloor.is_running() and izziAutoFloor_ == "off":
+                                izziAutoFloor.cancel()
+                            elif not izziAutoFloor.is_running() and izziAutoFloor_ == "on":
+                                izziAutoFloor.start()
+
                             print(getColour(anigameLottery)[0] + f'Anigame Lottery : {anigameLottery}')
                             print(getColour(anigameHourly)[0] + f'Anigame Hourly : {anigameHourly}')
                             print(getColour(anigameBTALL)[0] + f'Anigame bt all : {anigameBTALL}')
+                            print(getColour(anigameAutoFloor_)[0] + f'Anigame Auto Floor : {anigameAutoFloor_}')
                             print(getColour(izziLottery)[0] + f'Izzi Lottery : {izziLottery}')
                             print(getColour(izziHourly)[0] + f'Izzi Hourly : {izziHourly}')
                             print(getColour(izziBTALL)[0] + f'Izzi bt all : {izziBTALL}')
+                            print(getColour(izziAutoFloor_)[0] + f'Izzi Auto Floor : {izziAutoFloor_}')
                             if respond == "on":
-                                a=await message.channel.send(f'``{getColour(anigameLottery)[1]} Anigame Lottery : {anigameLottery} ``\n``{getColour(anigameHourly)[1]} Anigame Hourly : {anigameHourly} ``\n``{getColour(anigameBTALL)[1]} Anigame bt all : {anigameBTALL} ``\n``{getColour(configdat["izziLottery"])[1]} Izzi Lottery : {configdat["izziLottery"]} ``\n``{getColour(configdat["izziHourly"])[1]} Izzi Hourly : {configdat["izziHourly"]} ``\n``{getColour(izziBTALL)[1]} Izzi bt all : {izziBTALL} ``')
+                                a=await message.channel.send(f'``{getColour(anigameLottery)[1]} Anigame Lottery : {anigameLottery} ``\n``{getColour(anigameHourly)[1]} Anigame Hourly : {anigameHourly} ``\n``{getColour(anigameBTALL)[1]} Anigame bt all : {anigameBTALL} ``\n``{getColour(anigameAutoFloor_)[1]} Anigame Auto Floor : {anigameAutoFloor_} ``\n``{getColour(configdat["izziLottery"])[1]} Izzi Lottery : {configdat["izziLottery"]} ``\n``{getColour(configdat["izziHourly"])[1]} Izzi Hourly : {configdat["izziHourly"]} ``\n``{getColour(izziBTALL)[1]} Izzi bt all : {izziBTALL} ``\n``{getColour(izziAutoFloor_)[1]} Izzi Auto Floor : {izziAutoFloor_} ``')
                                 await asyncio.sleep(10);await a.delete()
                         
 
@@ -405,6 +471,19 @@ async def on_message(message):
                                     a=await message.channel.send(f'``{getColour(anigameBTALL)[1]} Anigame bt all : {anigameBTALL} ``')
                                     await asyncio.sleep(10);await a.delete()
 
+                            elif sniper.startswith('anigamea'):
+                                configdat['anigameAutoFloor'] = value
+                                setConfig(configdat)
+                                anigameAutoFloor_=value
+                                if anigameAutoFloor_ == "off":
+                                    if anigameAutoFloor.is_running():anigameAutoFloor.cancel()
+                                elif anigameAutoFloor_ == "on":
+                                    if not anigameAutoFloor.is_running():anigameAutoFloor.start()
+                                print( successColour + getColour(anigameAutoFloor_)[0] + f'Anigame Auto Floor : {anigameAutoFloor_}')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``{getColour(anigameAutoFloor_)[1]} Anigame Auto Floor : {anigameAutoFloor_} ``')
+                                    await asyncio.sleep(10);await a.delete()
+
                             elif sniper.startswith('izzil'):
                                 configdat['izziLottery'] = value
                                 setConfig(configdat)
@@ -442,6 +521,19 @@ async def on_message(message):
                                 print( successColour + getColour(izziBTALL)[0] + f'Izzi bt all : {izziBTALL}')
                                 if respond == "on":
                                     a=await message.channel.send(f'``{getColour(izziBTALL)[1]} Izzi bt all : {izziBTALL} ``')
+                                    await asyncio.sleep(10);await a.delete()
+
+                            elif sniper.startswith('izzia'):
+                                configdat['izziAutoFloor'] = value
+                                setConfig(configdat)
+                                izziAutoFloor_=value
+                                if izziAutoFloor_ == "off":
+                                    if izziAutoFloor.is_running():izziAutoFloor.cancel()
+                                elif izziAutoFloor_ == "on":
+                                    if not izziAutoFloor.is_running():izziAutoFloor.start()
+                                print( successColour + getColour(izziAutoFloor_)[0] + f'Anigame Auto Floor : {izziAutoFloor_}')
+                                if respond == "on":
+                                    a=await message.channel.send(f'``{getColour(izziAutoFloor_)[1]} Anigame Auto Floor : {izziAutoFloor_} ``')
                                     await asyncio.sleep(10);await a.delete()
                             
                             elif sniper.startswith('a'):
@@ -719,63 +811,113 @@ async def on_message(message):
                                     else:
                                         print(errorColour+f'couldnt claim the card : respond - {resp}')
 
-            #bt all
+            #checker 
             if message.channel.id == int(getConfig()['baseChannelID']):
                 async for msg in message.channel.history(limit=10):
                     if message.id == msg.id:
+                        title = description = author = footer = ''
                         for embed in msg.embeds:
                             embedInfo = (embed.to_dict())
-                            if 'title' in embedInfo:
-                                title = embedInfo['title']
-                            else:
-                                title = 'nil'
-                            if 'Challenging Area' in title:
-                                resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , '✅' , 'anigame')
+                            title = embedInfo['title'] if 'title' in embedInfo else 'nil'
+                            description = embedInfo['description'] if 'description' in embedInfo else 'nil'
+                            author = embedInfo['author']['name'] if 'author' in embedInfo else 'nil'
+                            footer = embedInfo['footer']['text'] if 'footer' in embedInfo else 'nil'
+                        if 'Challenging Area' in title:
+                            resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , '✅' , 'anigame')
+                        elif author == client.user.name and f'Travelled to Area [**{getConfig()["anigameAreaNumber"]} - {anigameFloor["currentFloor"]+1}**]' in title:
+                            anigameFloor['currentFloor'] += 1
+                            data = getConfig();data['anigameFloorNumber']+=1;setConfig(data)
+                        elif author == client.user.name and title == 'Error ⛔' and 'this floor is not accessible! Please double check which area ID you would like to go to.' in description:
+                            anigameFloor['currentFloor'] = 1
+                            data = getConfig();data['anigameFloorNumber']=1;data['anigameAreaNumber']+=1;setConfig(data)
+                            await changeArea() 
+                        elif author == client.user.name and '**Defeated' in title:
+                            if anigameAutoFloor.is_running():
+                                anigameAutoFloor.cancel()
+                            await notificateDefeat('Anigame' , token)
+                        elif author == client.user.name and title == 'Error ⛔':
+                            if 'You do not have enough stamina to proceed!' or 'you must fight atleast once!' in description:
+                                if anigameAutoFloor.is_running():
+                                    anigameAutoFloor.cancel()
+                                await asyncio.sleep(1800)
+                                if not anigameAutoFloor.is_running():
+                                    anigameAutoFloor.start()
+
 
         except Exception as e:
             print(errorColour + f'{e}')            
 
     
     #Izzi Sniper
-    elif message.author.id == 784851074472345633 and f'{str(message.guild.id)}|{str(message.channel.id)}' in getChannels():
+    elif message.author.id == 784851074472345633:
         try:
-            configdat=getConfig()
-            latency=configdat['latency']
-            if '-' not in latency:
-                latency = int(latency)
-            else:
-                latency = int(random.randint(int(latency.split('-')[0]),int(latency.split('-')[1])))
-            if configdat['izziSniper'] == 'on':
+            #Izzi Sniper
+            if f'{str(message.guild.id)}|{str(message.channel.id)}' in getChannels():
+                configdat=getConfig()
+                latency=configdat['latency']
+                if '-' not in latency:
+                    latency = int(latency)
+                else:
+                    latency = int(random.randint(int(latency.split('-')[0]),int(latency.split('-')[1])))
+                if configdat['izziSniper'] == 'on':
+                    async for msg in message.channel.history(limit=10):
+                        if message.id == msg.id:
+                            if f'has been added to **{client.user.name}\'s** collection.' in msg.content:
+                                now = datetime.now();current_time = now.strftime("%H:%M:%S")
+                                rarity = msg.content.split('__')[1]
+                                name = msg.content.split('**')[1]
+                                print(accentColour + f'Izzi : {msg.guild.name} : {msg.channel.name} : {rarity} : {name} : Claimed by {client.user} : {recentClaimTimeIzzi[message.channel.id]}')
+                                if clearText(rarity.lower())  in izziNotif:
+                                    await notificate('Izzi' , name , rarity , msg.channel.name,token)
+
+                            for embed in msg.embeds:
+                                embedInfo = (embed.to_dict())
+                                if 'description' in embedInfo:
+                                    description = embedInfo['description']
+                                else:
+                                    description = 'nil'
+                                    
+                                if description == '_A wild card has appeared._':
+                                    now = datetime.now();current_time = now.strftime("%H:%M:%S")
+                                    print(baseColour + f'Izzi : {msg.guild.name} : {msg.channel.name} : A wild card has appeared. : {current_time}')
+                                    await asyncio.sleep(latency)
+                                    resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , 'Claim','izzi')
+                                    if resp == 204:
+                                        now = datetime.now();current_time = now.strftime("%H:%M:%S")
+                                        recentClaimTimeIzzi[message.channel.id] = current_time
+                                    else:
+                                        print(errorColour+f'couldnt claim the card : respond - {resp}')
+              
+            #checker 
+            if message.channel.id == int(getConfig()['baseChannelID']):
                 async for msg in message.channel.history(limit=10):
                     if message.id == msg.id:
-                        if f'has been added to **{client.user.name}\'s** collection.' in msg.content:
-                            now = datetime.now();current_time = now.strftime("%H:%M:%S")
-                            rarity = msg.content.split('__')[1]
-                            name = msg.content.split('**')[1]
-                            print(accentColour + f'Izzi : {msg.guild.name} : {msg.channel.name} : {rarity} : {name} : Claimed by {client.user} : {recentClaimTimeIzzi[message.channel.id]}')
-                            if clearText(rarity.lower())  in izziNotif:
-                                await notificate('Izzi' , name , rarity , msg.channel.name,token)
-
-
-
+                        content = msg.content
+                        title = description = author = footer = ''
                         for embed in msg.embeds:
                             embedInfo = (embed.to_dict())
-                            if 'description' in embedInfo:
-                                description = embedInfo['description']
-                            else:
-                                description = 'nil'
-                                
-                            if description == '_A wild card has appeared._':
-                                now = datetime.now();current_time = now.strftime("%H:%M:%S")
-                                print(baseColour + f'Izzi : {msg.guild.name} : {msg.channel.name} : A wild card has appeared. : {current_time}')
-                                await asyncio.sleep(latency)
-                                resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , 'Claim','izzi')
-                                if resp == 204:
-                                    now = datetime.now();current_time = now.strftime("%H:%M:%S")
-                                    recentClaimTimeIzzi[message.channel.id] = current_time
-                                else:
-                                    print(errorColour+f'couldnt claim the card : respond - {resp}')
-            #new Izzi Sniper
+                            title = embedInfo['title'] if 'title' in embedInfo else 'nil'
+                            description = embedInfo['description'] if 'description' in embedInfo else 'nil'
+                            author = embedInfo['author']['name'] if 'author' in embedInfo else 'nil'
+                            footer = embedInfo['footer']['text'] if 'footer' in embedInfo else 'nil'
+                        if author == client.user.name and f'Travelled to Arena [{getConfig()["izziLocNumber"]}-{izziFloor["currentFloor"]+1}]' in title:
+                            izziFloor['currentFloor'] += 1
+                            data = getConfig();data['izziFloorNumber']+=1;setConfig(data)
+                        elif content.strip() == f"Summoner **{client.user.name}**, you have cleared this zone! Use ``zone n`` to move to the next one":
+                            izziFloor['currentFloor'] = 1
+                            data = getConfig();data['izziFloorNumber']=1;data['izziLocNumber']+=1;setConfig(data)
+                            await changeLoc() 
+                        elif author == client.user.name and 'Defeated' in title:
+                            if izziAutoFloor.is_running():
+                                izziAutoFloor.cancel()
+                            await notificateDefeat('Izzi' , token)
+                        elif author == client.user.name and 'Error' in title and 'You do not have enough mana to proceed!' in description:
+                            if izziAutoFloor.is_running():
+                                izziAutoFloor.cancel()
+                            await asyncio.sleep(1800)
+                            if not izziAutoFloor.is_running():
+                                izziAutoFloor.start()
+                          
 
         except Exception as e:
             print(errorColour + f'{e}') 

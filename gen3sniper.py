@@ -64,5 +64,5 @@ def makeUnread(channelID,token):
     jsondat = json.loads(r.text)
     messageID = jsondat[-1].get('id')
     url = f'https://discord.com/api/v9/channels/{channelID}/messages/{messageID}/ack'
-    r = requests.post(url , headers={"authorization":token} , json={"manual":True , "mention_count":0})
+    r = requests.post(url , headers={"authorization":token} , json={"manual":True , "mention_count":1})
     return(r.status_code)
