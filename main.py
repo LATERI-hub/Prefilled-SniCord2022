@@ -903,15 +903,15 @@ async def on_message(message):
                         if author == client.user.name and f'Travelled to Arena [{getConfig()["izziLocNumber"]}-{izziFloor["currentFloor"]+1}]' in title and izziAutoFloor_ == "on":
                             izziFloor['currentFloor'] += 1
                             data = getConfig();data['izziFloorNumber']+=1;setConfig(data)
-                        elif content.strip() == f"Summoner **{client.user.name}**, you have cleared this zone! Use ``zone n`` to move to the next one" and izziAutoFloor_ == "on"::
+                        elif content.strip() == f"Summoner **{client.user.name}**, you have cleared this zone! Use ``zone n`` to move to the next one" and izziAutoFloor_ == "on":
                             izziFloor['currentFloor'] = 1
                             data = getConfig();data['izziFloorNumber']=1;data['izziLocNumber']+=1;setConfig(data)
                             await changeLoc() 
-                        elif author == client.user.name and 'Defeated' in title and izziAutoFloor_ == "on"::
+                        elif author == client.user.name and 'Defeated' in title and izziAutoFloor_ == "on":
                             if izziAutoFloor.is_running():
                                 izziAutoFloor.cancel()
                             await notificateDefeat('Izzi' , token)
-                        elif author == client.user.name and 'Error' in title and 'You do not have enough mana to proceed!' in description and izziAutoFloor_ == "on"::
+                        elif author == client.user.name and 'Error' in title and 'You do not have enough mana to proceed!' in description and izziAutoFloor_ == "on":
                             if izziAutoFloor.is_running():
                                 izziAutoFloor.cancel()
                             await asyncio.sleep(1800)
