@@ -824,18 +824,18 @@ async def on_message(message):
                             footer = embedInfo['footer']['text'] if 'footer' in embedInfo else 'nil'
                         if 'Challenging Area' in title:
                             resp=gen3sniper.clickButton(str(msg.guild.id) , str(msg.channel.id) , str(msg.id) , token , '✅' , 'anigame')
-                        elif author == client.user.name and f'Travelled to Area [**{getConfig()["anigameAreaNumber"]} - {anigameFloor["currentFloor"]+1}**]' in title:
+                        elif author == client.user.name and f'Travelled to Area [**{getConfig()["anigameAreaNumber"]} - {anigameFloor["currentFloor"]+1}**]' in title and anigameAutoFloor_ == "on":
                             anigameFloor['currentFloor'] += 1
                             data = getConfig();data['anigameFloorNumber']+=1;setConfig(data)
-                        elif author == client.user.name and title == 'Error ⛔' and 'this floor is not accessible! Please double check which area ID you would like to go to.' in description:
+                        elif author == client.user.name and title == 'Error ⛔' and 'this floor is not accessible! Please double check which area ID you would like to go to.' in description and anigameAutoFloor_ == "on":
                             anigameFloor['currentFloor'] = 1
                             data = getConfig();data['anigameFloorNumber']=1;data['anigameAreaNumber']+=1;setConfig(data)
                             await changeArea() 
-                        elif author == client.user.name and '**Defeated' in title:
+                        elif author == client.user.name and '**Defeated' in title and anigameAutoFloor_ == "on":
                             if anigameAutoFloor.is_running():
                                 anigameAutoFloor.cancel()
                             await notificateDefeat('Anigame' , token)
-                        elif author == client.user.name and title == 'Error ⛔':
+                        elif author == client.user.name and title == 'Error ⛔' and anigameAutoFloor_ == "on":
                             if 'You do not have enough stamina to proceed!' or 'you must fight atleast once!' in description:
                                 if anigameAutoFloor.is_running():
                                     anigameAutoFloor.cancel()
@@ -900,18 +900,18 @@ async def on_message(message):
                             description = embedInfo['description'] if 'description' in embedInfo else 'nil'
                             author = embedInfo['author']['name'] if 'author' in embedInfo else 'nil'
                             footer = embedInfo['footer']['text'] if 'footer' in embedInfo else 'nil'
-                        if author == client.user.name and f'Travelled to Arena [{getConfig()["izziLocNumber"]}-{izziFloor["currentFloor"]+1}]' in title:
+                        if author == client.user.name and f'Travelled to Arena [{getConfig()["izziLocNumber"]}-{izziFloor["currentFloor"]+1}]' in title and izziAutoFloor_ == "on":
                             izziFloor['currentFloor'] += 1
                             data = getConfig();data['izziFloorNumber']+=1;setConfig(data)
-                        elif content.strip() == f"Summoner **{client.user.name}**, you have cleared this zone! Use ``zone n`` to move to the next one":
+                        elif content.strip() == f"Summoner **{client.user.name}**, you have cleared this zone! Use ``zone n`` to move to the next one" and izziAutoFloor_ == "on"::
                             izziFloor['currentFloor'] = 1
                             data = getConfig();data['izziFloorNumber']=1;data['izziLocNumber']+=1;setConfig(data)
                             await changeLoc() 
-                        elif author == client.user.name and 'Defeated' in title:
+                        elif author == client.user.name and 'Defeated' in title and izziAutoFloor_ == "on"::
                             if izziAutoFloor.is_running():
                                 izziAutoFloor.cancel()
                             await notificateDefeat('Izzi' , token)
-                        elif author == client.user.name and 'Error' in title and 'You do not have enough mana to proceed!' in description:
+                        elif author == client.user.name and 'Error' in title and 'You do not have enough mana to proceed!' in description and izziAutoFloor_ == "on"::
                             if izziAutoFloor.is_running():
                                 izziAutoFloor.cancel()
                             await asyncio.sleep(1800)
