@@ -253,6 +253,8 @@ async def changeLoc():
 
 @client.event
 async def on_message(message):
+    global anigameAutoFloor_
+    global izziAutoFloor_
     #Commands
     if message.author.id == client.user.id:
         try:
