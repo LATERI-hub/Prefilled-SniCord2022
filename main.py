@@ -158,6 +158,7 @@ async def on_ready():
     if anigameHourly == "on":
         anigameHourlyLoop.start()
     if anigameAutoFloor_ == "on":
+        await changeArea()
         anigameAutoFloor.start()
     if anigameBTALL == "on":
         anigameBTALLLoop.start() 
@@ -168,6 +169,8 @@ async def on_ready():
         izziHourlyLoop.start()
         await asyncio.sleep(2)
     if izziAutoFloor_ == "on":
+        await changeLoc()
+        await asyncio.sleep(2)
         izziAutoFloor.start()
         await asyncio.sleep(2)
     if izziBTALL == "on":
@@ -369,6 +372,7 @@ async def on_message(message):
                             if anigameAutoFloor.is_running() and anigameAutoFloor_ == "off":
                                 anigameAutoFloor.cancel()
                             elif not anigameAutoFloor.is_running() and anigameAutoFloor_ == "on":
+                                await changeArea()
                                 anigameAutoFloor.start()
 
                             if izziLotteryLoop.is_running() and izziLottery == "off":
@@ -389,6 +393,8 @@ async def on_message(message):
                             if izziAutoFloor.is_running() and izziAutoFloor_ == "off":
                                 izziAutoFloor.cancel()
                             elif not izziAutoFloor.is_running() and izziAutoFloor_ == "on":
+                                await changeLoc()
+                                await asyncio.sleep(2)
                                 izziAutoFloor.start()
 
                             print(getColour(anigameLottery)[0] + f'Anigame Lottery : {anigameLottery}')
@@ -478,9 +484,12 @@ async def on_message(message):
                                 setConfig(configdat)
                                 anigameAutoFloor_=value
                                 if anigameAutoFloor_ == "off":
-                                    if anigameAutoFloor.is_running():anigameAutoFloor.cancel()
+                                    if anigameAutoFloor.is_running():
+                                        anigameAutoFloor.cancel()
                                 elif anigameAutoFloor_ == "on":
-                                    if not anigameAutoFloor.is_running():anigameAutoFloor.start()
+                                    if not anigameAutoFloor.is_running():
+                                        await changeArea()
+                                        anigameAutoFloor.start()
                                 print( successColour + getColour(anigameAutoFloor_)[0] + f'Anigame Auto Floor : {anigameAutoFloor_}')
                                 if respond == "on":
                                     a=await message.channel.send(f'``{getColour(anigameAutoFloor_)[1]} Anigame Auto Floor : {anigameAutoFloor_} ``')
@@ -530,9 +539,13 @@ async def on_message(message):
                                 setConfig(configdat)
                                 izziAutoFloor_=value
                                 if izziAutoFloor_ == "off":
-                                    if izziAutoFloor.is_running():izziAutoFloor.cancel()
+                                    if izziAutoFloor.is_running():
+                                        izziAutoFloor.cancel()
                                 elif izziAutoFloor_ == "on":
-                                    if not izziAutoFloor.is_running():izziAutoFloor.start()
+                                    if not izziAutoFloor.is_running():
+                                        await changeLoc()
+                                        await asyncio.sleep(2)
+                                        izziAutoFloor.start()
                                 print( successColour + getColour(izziAutoFloor_)[0] + f'Anigame Auto Floor : {izziAutoFloor_}')
                                 if respond == "on":
                                     a=await message.channel.send(f'``{getColour(izziAutoFloor_)[1]} Anigame Auto Floor : {izziAutoFloor_} ``')
