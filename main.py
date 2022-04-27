@@ -953,6 +953,5 @@ except Exception as e:
     print(errorColour + f'{e}');print(cleanColour,end='')
     if '429 Too Many Requests' in str(e):
         r = requests.get('https://discord.com/api/v9/')
-        print(infoColour+'-----> Retry After <-----')
-        print(round(float(r.headers['Retry-After'])/60 , 2) , 'mins')
+        print(infoColour+'Retry After -',round(float(r.headers['Retry-After'])/60 , 2) , 'mins' )
         print(cleanColour,end='')
