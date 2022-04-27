@@ -1,4 +1,6 @@
 import os
+import requests 
+
 try:
     from discord.ext import commands , tasks
 except:
@@ -27,6 +29,7 @@ accentColour = Fore.MAGENTA + Style.BRIGHT + "Claimed : "
 successColour = Fore.GREEN + Style.BRIGHT + "Success : "
 offcolour = Fore.RED + Style.BRIGHT
 oncolour = Fore.GREEN + Style.BRIGHT
+cleanColour = Style.RESET_ALL
 
 def getColour(event):
     if event == "on":
@@ -942,3 +945,8 @@ try:
     client.run(token, bot=False)
 except Exception as e:
     print(errorColour + f'{e}')
+    if '429 Too Many Requests' in str(e):
+        r = requests.get('https://discord.com/api/v9/')
+        print(infoColour+'-----> Retry After <-----')
+        print(round(float(r.headers['Retry-After'])/60 , 2) , 'mins')
+        print(cleanColour,end='')
